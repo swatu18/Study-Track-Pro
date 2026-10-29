@@ -9,14 +9,29 @@ import { MockTestModal } from './components/MockTestModal';
 import { AuthModal } from './components/AuthModal';
 import { DailySprintChecklist } from './components/DailySprintChecklist';
 import { PeerLeaderboard } from './components/PeerLeaderboard';
+import { AdminDashboard } from './components/AdminDashboard';
+import { LandingAuthSplit } from './components/LandingAuthSplit';
 import { mockTestsData } from './data/mockTestsData';
-import { Flame, CheckCircle, Clock, Zap, Award, ArrowRight, TrendingUp, Sparkles, BookOpen } from 'lucide-react';
+import { 
+  Flame, CheckCircle, Clock, Zap, Award, ArrowRight, TrendingUp, 
+  Sparkles, BookOpen, ShieldCheck, Lock, UserPlus, LogIn
+} from 'lucide-react';
 
-function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
+function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic, onOpenAuth }) {
   const { currentUser, punchTodayAttendance } = useAuth();
   const todayKey = getTodayKey();
   const isMarked = currentUser?.attendanceDates?.includes(todayKey);
 
+  // If student is not logged in, present the realistic split welcome landing page!
+  if (!currentUser) {
+    return (
+      <div className="space-y-8 animate-fadeIn">
+        <LandingAuthSplit />
+      </div>
+    );
+  }
+
+  // Authenticated Student View
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Login Confetti & Welcome Banner */}
@@ -37,7 +52,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
               <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 via-amber-500 to-red-600 rounded-3xl blur-md opacity-75 group-hover:opacity-100 transition animate-pulse"></div>
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-slate-950 to-slate-900 border border-orange-500/50 flex flex-col items-center justify-center shadow-xl">
                 <Flame className="w-12 h-12 text-orange-500 animate-bounce fill-orange-500" />
-                <span className="text-xl sm:text-2xl font-black text-white -mt-1">{currentUser?.streak || 10}</span>
+                <span className="text-xl sm:text-2xl font-black text-white -mt-1">{currentUser.streak || 1}</span>
                 <span className="text-[10px] font-bold text-orange-400 tracking-widest uppercase">STREAK</span>
               </div>
             </div>
@@ -63,13 +78,13 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Welcome to Day {currentUser?.streak || 10}, {currentUser?.name?.split(' ')[0]}! 🔥
+                Welcome to Day {currentUser.streak || 1}, {currentUser.name?.split(' ')[0]}! 🔥
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
                 {isMarked
-                  ? `Your attendance is locked in for today! Your continuous streak is at ${currentUser?.streak} days. Practice more PYQs or challenge yourself with a mock test.`
-                  : `You are on Day ${currentUser?.streak || 10}! Solve at least 1 PYQ or click Punch below to mark today's attendance format and maintain your streak.`}
+                  ? `Your attendance is locked in for today! Your continuous streak is at ${currentUser.streak} days. Practice more PYQs or challenge yourself with a mock test.`
+                  : `You are on Day ${currentUser.streak || 1}! Solve at least 1 PYQ or click Punch below to mark today's attendance format and maintain your streak.`}
               </p>
 
               {/* Action buttons */}
@@ -105,7 +120,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
                   className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition flex items-center gap-1.5"
                 >
                   <Award className="w-4 h-4 text-indigo-400" />
-                  <span>Day 10 Mock Test</span>
+                  <span>Day {currentUser.streak} Mock Test</span>
                 </button>
               </div>
             </div>
@@ -116,7 +131,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
             <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Days Attended</span>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-emerald-400">{currentUser?.attendanceDates?.length || 10}</span>
+                <span className="text-2xl font-black text-emerald-400">{currentUser.attendanceDates?.length || 0}</span>
                 <span className="text-xs text-slate-500 font-medium">100% Rate</span>
               </div>
             </div>
@@ -124,7 +139,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
             <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Longest Streak</span>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-amber-400">{currentUser?.longestStreak || 10}d</span>
+                <span className="text-2xl font-black text-amber-400">{currentUser.longestStreak || 1}d</span>
                 <span className="text-xs text-amber-500/80 font-medium">Record</span>
               </div>
             </div>
@@ -132,7 +147,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
             <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Questions Solved</span>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-cyan-400">{currentUser?.solvedQuestions?.length || 0}</span>
+                <span className="text-2xl font-black text-cyan-400">{currentUser.solvedQuestions?.length || 0}</span>
                 <span className="text-xs text-slate-500 font-medium">PYQs</span>
               </div>
             </div>
@@ -140,7 +155,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
             <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Study Minutes</span>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-purple-400">{currentUser?.minutesStudied || 0}m</span>
+                <span className="text-2xl font-black text-purple-400">{currentUser.minutesStudied || 0}m</span>
                 <span className="text-xs text-slate-500 font-medium">Focus</span>
               </div>
             </div>
@@ -199,7 +214,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
                 onClick={() => onLaunchMock("mock-tcs-nqt-day1")}
                 className="px-4 py-2.5 rounded-xl font-semibold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
               >
-                Day 10 Mock
+                Launch Mock
               </button>
             </div>
           </div>
@@ -263,7 +278,7 @@ function DashboardHome({ setCurrentView, onLaunchMock, onSelectTopic }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(currentUser?.topicStats || {}).slice(0, 4).map(([topic, stats]) => {
+          {Object.entries(currentUser.topicStats || {}).slice(0, 4).map(([topic, stats]) => {
             const acc = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
             const isGood = acc >= 75;
             const isLow = acc < 50;
@@ -329,6 +344,7 @@ function MainApp() {
             setCurrentView={setCurrentView}
             onLaunchMock={handleLaunchMock}
             onSelectTopic={handleSelectTopic}
+            onOpenAuth={() => setIsAuthOpen(true)}
           />
         )}
 
@@ -392,6 +408,10 @@ function MainApp() {
 
         {currentView === 'leaderboard' && (
           <PeerLeaderboard onOpenAddFriend={() => setIsAuthOpen(true)} />
+        )}
+
+        {currentView === 'admin' && (
+          <AdminDashboard />
         )}
       </main>
 

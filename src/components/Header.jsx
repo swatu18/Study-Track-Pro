@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth, getTodayKey } from '../context/AuthContext';
-import { Flame, CheckCircle, Clock, ChevronDown, User, LogOut, Trophy, Calendar } from 'lucide-react';
+import { 
+  Flame, CheckCircle, Clock, ChevronDown, User, LogOut, 
+  Trophy, Calendar, ShieldAlert, KeyRound, Sparkles, LogIn
+} from 'lucide-react';
 
 export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }) => {
   const { currentUser, logoutUser, punchTodayAttendance } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const todayKey = getTodayKey();
   const isMarkedToday = currentUser?.attendanceDates?.includes(todayKey);
+  
+  // Strict admin check: Only users with role === 'admin' can access admin features
+  const isAdmin = currentUser && currentUser.role === 'admin';
 
   return (
     <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
@@ -89,8 +95,23 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            Friends
+            Leaderboard
           </button>
+
+          {/* ADMIN TAB: STRICTLY VISIBLE ONLY TO THE AUTHENTICATED ADMIN USER */}
+          {isAdmin && (
+            <button
+              onClick={() => setCurrentView('admin')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                currentView === 'admin'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-indigo-400 hover:text-white hover:bg-indigo-950/40'
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Admin Portal (Faculty Only)</span>
+            </button>
+          )}
         </nav>
 
         {/* Right Section */}
@@ -127,7 +148,9 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
                   onClick={() => setMenuOpen(!menuOpen)}
                   className="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-800 border border-slate-700/60 transition"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-xs ${
+                    isAdmin ? 'bg-gradient-to-tr from-amber-500 to-indigo-600 ring-2 ring-indigo-400' : 'bg-gradient-to-tr from-indigo-500 to-purple-600'
+                  }`}>
                     {currentUser.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-xs font-bold text-slate-200 hidden lg:inline max-w-[90px] truncate">
@@ -137,14 +160,32 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
                     <div className="px-4 py-2 border-b border-slate-800">
-                      <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
+                        {isAdmin && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            Faculty Admin
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-400 truncate">{currentUser.email}</p>
                       <span className="inline-block mt-1 text-[10px] text-amber-400 font-semibold">
                         Track: {currentUser.target}
                       </span>
                     </div>
+
+                    {/* Admin option inside menu strictly for Admin role */}
+                    {isAdmin && (
+                      <button
+                        onClick={() => { setMenuOpen(false); setCurrentView('admin'); }}
+                        className="w-full text-left px-4 py-2 text-xs text-indigo-300 hover:bg-slate-800 flex items-center gap-2 font-bold"
+                      >
+                        <ShieldAlert className="w-4 h-4 text-indigo-400" />
+                        Admin Student Monitor
+                      </button>
+                    )}
 
                     <button
                       onClick={() => { setMenuOpen(false); setCurrentView('attendance'); }}
@@ -165,7 +206,7 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
                       className="w-full text-left px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 flex items-center gap-2"
                     >
                       <User className="w-4 h-4 text-blue-400" />
-                      Switch Learner / Add Friend
+                      Switch Account / Register
                     </button>
 
                     <div className="border-t border-slate-800 my-1"></div>
@@ -182,12 +223,15 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
               </div>
             </>
           ) : (
-            <button
-              onClick={onOpenAuth}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 transition"
-            >
-              Sign In / Register
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={onOpenAuth}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 transition flex items-center gap-1.5"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In / Register</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -211,7 +255,7 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
           onClick={() => setCurrentView('practice')}
           className={`px-2 py-1 rounded ${currentView === 'practice' ? 'text-orange-400 font-bold' : 'text-slate-400'}`}
         >
-          PYQs
+          Modules
         </button>
         <button
           onClick={() => setCurrentView('diagnostics')}
@@ -225,12 +269,14 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
         >
           Mocks
         </button>
-        <button
-          onClick={() => setCurrentView('leaderboard')}
-          className={`px-2 py-1 rounded ${currentView === 'leaderboard' ? 'text-orange-400 font-bold' : 'text-slate-400'}`}
-        >
-          Friends
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => setCurrentView('admin')}
+            className={`px-2 py-1 rounded ${currentView === 'admin' ? 'text-indigo-400 font-bold' : 'text-slate-400'}`}
+          >
+            Admin
+          </button>
+        )}
       </div>
     </header>
   );
