@@ -20,7 +20,6 @@ export const LandingAuthSplit = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [target, setTarget] = useState('Both (TCS + Banking)');
-  const [startingStreak, setStartingStreak] = useState('1');
 
   // Password visibility
   const [showLoginPassword, setShowLoginPassword] = useState(false);
@@ -65,7 +64,7 @@ export const LandingAuthSplit = () => {
       setErrorMessage('Password must be at least 6 characters long.');
       return;
     }
-    const res = registerUser({ name, email, password, target, startingStreak });
+    const res = registerUser({ name, email, password, target, startingStreak: 1 });
     if (!res.success) {
       setErrorMessage(res.error);
     }
@@ -451,35 +450,17 @@ export const LandingAuthSplit = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Target Exam</label>
-                  <select
-                    value={target}
-                    onChange={(e) => setTarget(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-orange-500"
-                  >
-                    <option value="Both (TCS + Banking)">Both (TCS + Bank)</option>
-                    <option value="TCS NQT">Track A: TCS NQT</option>
-                    <option value="Banking Exams">Track B: Banking Exams</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Initial Streak</label>
-                  <div className="relative">
-                    <Flame className="absolute left-3 top-2.5 w-4 h-4 text-orange-500" />
-                    <input
-                      type="number"
-                      min="1"
-                      max="1000"
-                      value={startingStreak}
-                      onChange={(e) => setStartingStreak(e.target.value)}
-                      placeholder="1"
-                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-orange-500"
-                    />
-                  </div>
-                </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Target Exam Track</label>
+                <select
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-orange-500"
+                >
+                  <option value="Both (TCS + Banking)">Both Tracks: TCS NQT + Banking Exams</option>
+                  <option value="TCS NQT">Track A: TCS NQT (National Qualifier Test)</option>
+                  <option value="Banking Exams">Track B: Banking Exams (IBPS / SBI PO & Clerk)</option>
+                </select>
               </div>
 
               <div>
@@ -509,7 +490,7 @@ export const LandingAuthSplit = () => {
                 type="submit"
                 className="w-full py-3 rounded-xl font-bold text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25 transition flex items-center justify-center space-x-2 mt-2"
               >
-                <span>Register & Begin Day {startingStreak || 1}</span>
+                <span>Create Student Account & Begin Day 1</span>
                 <Sparkles className="w-4 h-4" />
               </button>
 

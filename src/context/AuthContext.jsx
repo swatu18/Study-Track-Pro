@@ -96,6 +96,26 @@ export const AuthProvider = ({ children }) => {
 
   const [loginBanner, setLoginBanner] = useState(null);
 
+  // Theme mode (Dark / Light)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("study_track_pro_theme") || "dark";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("study_track_pro_theme", theme);
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // Activity audit log for Admin monitoring
   const [activityLogs, setActivityLogs] = useState(() => {
     const stored = localStorage.getItem("study_track_pro_activity_logs");
@@ -521,6 +541,8 @@ export const AuthProvider = ({ children }) => {
         addChecklist,
         logStudyTime,
         loginBanner,
+        theme,
+        toggleTheme,
         adminUpdateStudentPassword,
         clearLoginBanner: () => setLoginBanner(null)
       }}

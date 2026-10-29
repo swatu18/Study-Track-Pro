@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useAuth, getTodayKey } from '../context/AuthContext';
 import { 
   Flame, CheckCircle, Clock, ChevronDown, User, LogOut, 
-  Trophy, Calendar, ShieldAlert, KeyRound, Sparkles, LogIn
+  Trophy, Calendar, ShieldAlert, KeyRound, Sparkles, LogIn, Sun, Moon
 } from 'lucide-react';
 
 export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }) => {
-  const { currentUser, logoutUser, punchTodayAttendance } = useAuth();
+  const { currentUser, logoutUser, punchTodayAttendance, theme, toggleTheme } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const todayKey = getTodayKey();
   const isMarkedToday = currentUser?.attendanceDates?.includes(todayKey);
@@ -115,7 +115,21 @@ export const Header = ({ currentView, setCurrentView, onOpenAuth, onLaunchMock }
         </nav>
 
         {/* Right Section */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Light / Dark Mode Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl border border-slate-700/60 hover:border-orange-500/50 bg-slate-950/60 hover:bg-slate-800 text-slate-300 hover:text-amber-400 transition flex items-center justify-center shadow-sm"
+            title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle Dark and Light Mode"
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-indigo-500" />
+            )}
+          </button>
+
           {currentUser ? (
             <>
               {/* Snapchat Streak Pill */}

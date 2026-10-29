@@ -264,7 +264,7 @@ export const MockTestModal = ({ isOpen, onClose, selectedMockId = "mock-tcs-nqt-
                   Question Navigation Palette
                 </h4>
 
-                <div className="grid grid-cols-5 gap-2 mb-6">
+                <div className="grid grid-cols-5 gap-2 mb-6 max-h-72 overflow-y-auto pr-1">
                   {activeMock.questions.map((_, idx) => {
                     const isAnswered = userAnswers[idx] !== undefined;
                     const isMarked = markedForReview.has(idx);
